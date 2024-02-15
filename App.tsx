@@ -1,12 +1,6 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
+
 import {
   SafeAreaView,
   ScrollView,
@@ -17,17 +11,16 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
+
+interface CustomFile {
+  name: string;
+  size: number;
+}
 
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -55,12 +48,32 @@ function Section({children, title}: SectionProps): React.JSX.Element {
   );
 }
 
-function App(): React.JSX.Element {
+function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const [dirs, setDirs] = useState<CustomFile[]>([]);
+
+  useEffect(() => {
+    var files = [];
+    for (let i = 0; i < 100; i++) {
+      files.push({name: `file${i}.jsx`, size: 312});
+    }
+    setDirs(files);
+  }, []);
+
+  const [totalSize, setSize] = useState(0);
+
+  useEffect(() => {
+    let total = 0;
+    dirs.forEach(dir => {
+      total += dir.size;
+    });
+    setSize(total);
+  }, [dirs]);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -71,25 +84,19 @@ function App(): React.JSX.Element {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
+          <Section title="파일 나열">
+            {dirs &&
+              dirs.map(file => {
+                return <Text> {file.name}</Text>;
+              })}
           </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
+          <Section title="나의 저장 공간">
+            <Text> {totalSize}MB</Text>;
           </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
         </View>
       </ScrollView>
     </SafeAreaView>
